@@ -39,39 +39,39 @@ struct CardView: View {
     }
     
     var body: some View {
-        ZStack {
-            let shape = RoundedRectangle(cornerRadius: 12)
-            if card.isFaceUp {
-                shape
-                    .fill()
-                    .foregroundColor(.white)
-                shape
-                    .strokeBorder(lineWidth: 3)
-                Text(card.content)
-                    .font(.largeTitle)
-            } else if card.isMatched {
-                shape
-                    .opacity(0)
-            } else {
-                shape
-                    .fill()
+        GeometryReader { geomatry in
+            ZStack {
+                let shape = RoundedRectangle(cornerRadius: DrawingConstant.cornerRadius)
+                if card.isFaceUp {
+                    shape
+                        .fill()
+                        .foregroundColor(.white)
+                    shape
+                        .strokeBorder(lineWidth: DrawingConstant.lineWidth)
+                    Text(card.content)
+                        .font(font(in: geomatry.size))
+                } else if card.isMatched {
+                    shape
+                        .opacity(0)
+                } else {
+                    shape
+                        .fill()
+                }
             }
+            .foregroundColor(.red)
         }
-        .foregroundColor(.red)
+    }
+    
+    private func font(in size: CGSize) -> Font {
+        Font.system(size: min(size.width, size.height) * DrawingConstant.fontScale)
+    }
+    
+    private struct DrawingConstant {
+        static let cornerRadius: CGFloat = 20
+        static let lineWidth: CGFloat = 3
+        static let fontScale: CGFloat = 0.75
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 struct ContentView_Previews: PreviewProvider {
