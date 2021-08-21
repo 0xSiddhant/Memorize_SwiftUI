@@ -10,10 +10,13 @@ import Foundation
 //MARK:- Model
 struct MemoryGame<CardContent> where CardContent: Equatable {
     private(set) var cards: [Card]
-    private var indexOfAlreadyFaceUpCard: Int?
+    private var indexOfAlreadyFaceUpCard: Int? {
+        get { cards.indices.filter { cards[$0].isFaceUp}.oneAndOnly }
+        set { cards.indices.forEach {cards[$0].isFaceUp = $0 == newValue} }
+    }
     
     init(numberOfPairOfCards: Int, createCardContent: ((Int) -> CardContent)) {
-        cards = [Card]()
+        cards = []
         for pairIndx in 0..<numberOfPairOfCards {
             let content = createCardContent(pairIndx)
             cards.append(Card(content: content, id: pairIndx*2))
@@ -30,22 +33,24 @@ struct MemoryGame<CardContent> where CardContent: Equatable {
                     cards[choosenIndex].isMatched = true
                     cards[previousIndx].isMatched = true
                 }
-                indexOfAlreadyFaceUpCard = nil
+                cards[choosenIndex].isFaceUp = true
             } else {
-                for index in cards.indices {
-                    cards[index].isFaceUp = false
-                }
                 indexOfAlreadyFaceUpCard = choosenIndex
             }
             
-            cards[choosenIndex].isFaceUp.toggle()
         }
     }
     
     struct Card: Identifiable {
         var isFaceUp = false
         var isMatched = false
-        var content: CardContent
-        var id: Int
+        let content: CardContent
+        let id: Int
+    }
+}
+
+extension Array {
+    var oneAndOnly: Element? {
+        count == 1 ? first : nil
     }
 }
