@@ -22,6 +22,7 @@ struct EmojiMemoryGameView: View {
                     }
             }
         }
+        .foregroundColor(.red)
     }
 }
 
@@ -36,27 +37,15 @@ struct CardView: View {
     var body: some View {
         GeometryReader { geomatry in
             ZStack {
-                let shape = RoundedRectangle(cornerRadius: DrawingConstant.cornerRadius)
-                if card.isFaceUp {
-                    shape
-                        .fill()
-                        .foregroundColor(.white)
-                    shape
-                        .strokeBorder(lineWidth: DrawingConstant.lineWidth)
                     Pie(startAngle: Angle(degrees: 0-90), endAngle: Angle(degrees: 110-90))
                         .padding(DrawingConstant.circlePadding)
                         .opacity(DrawingConstant.circleOpacity)
                     Text(card.content)
                         .font(font(in: geomatry.size))
-                } else if card.isMatched {
-                    shape
-                        .opacity(0)
-                } else {
-                    shape
-                        .fill()
-                }
+                
             }
-            .foregroundColor(.red)
+            .cardify(isFaceUp: card.isFaceUp)
+//            .modifier(Cardify(isFaceUp: card.isFaceUp))
         }
     }
     
