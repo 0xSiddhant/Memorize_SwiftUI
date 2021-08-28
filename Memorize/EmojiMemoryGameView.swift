@@ -11,22 +11,17 @@ struct EmojiMemoryGameView: View {
     @ObservedObject var game: EmojiMemoryGame
     
     var body: some View {
-        VStack {
-            HStack {
-                ScrollView {
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 75))]) {
-                        ForEach(game.cards) { card in
-                            CardView(card)
-                                .aspectRatio(2/3, contentMode: .fit)
-                                .onTapGesture {
-                                    game.choose(card: card)
-                                }
-                        }
+        AspectVGrid(items: game.cards, aspectRatio: 2/3) { card in
+            if card.isMatched && !card.isFaceUp {
+                Rectangle().opacity(0)
+            } else {
+                CardView(card)
+                    .padding(4)
+                    .onTapGesture {
+                        game.choose(card: card)
                     }
-                }
             }
         }
-        .padding()
     }
 }
 
@@ -48,6 +43,9 @@ struct CardView: View {
                         .foregroundColor(.white)
                     shape
                         .strokeBorder(lineWidth: DrawingConstant.lineWidth)
+                    Pie(startAngle: Angle(degrees: 0-90), endAngle: Angle(degrees: 110-90))
+                        .padding(DrawingConstant.circlePadding)
+                        .opacity(DrawingConstant.circleOpacity)
                     Text(card.content)
                         .font(font(in: geomatry.size))
                 } else if card.isMatched {
@@ -67,9 +65,11 @@ struct CardView: View {
     }
     
     private struct DrawingConstant {
-        static let cornerRadius: CGFloat = 20
+        static let cornerRadius: CGFloat = 10
         static let lineWidth: CGFloat = 3
-        static let fontScale: CGFloat = 0.75
+        static let fontScale: CGFloat = 0.7
+        static let circlePadding: CGFloat = 5
+        static let circleOpacity: Double = 0.5
     }
 }
 
@@ -77,9 +77,7 @@ struct CardView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         let model = EmojiMemoryGame()
-        EmojiMemoryGameView(game: model)
-            .preferredColorScheme(.light)
-        EmojiMemoryGameView(game: model)
-            .preferredColorScheme(.dark)
+        model.choose(card: model.cards.first!)
+        return EmojiMemoryGameView(game: model)
     }
 }
